@@ -18,11 +18,27 @@ fn main() {
 
         // Vérifier la commmande 'exit' pour quitter le shell 
         if input == "exit" {
-            println!("Bye!");
+            // println!("Bye!");
             break;
         }
 
+        // Séparer la commande et les arguments
+        let mut parts = input.split_whitespace();
+        if let Some(command) = parts.next() {
+            match command {
+                "echo" => {
+                    // Récuperer le reste de la ligne après 'echo'
+                    let args: Vec<&str> = parts.collect();
+                    println!("{}", args.join(" "));
+                }
+                _ => {
+                    // Commande non reconnue 
+                    println!("Commande '{}' introuvable", command)
+                }
+            }
+        }
+
         // Afficher la coommande (pour test)
-        println!("Vous avez tapé: {}", input);
+        // println!("Vous avez tapé: {}", input);
     }
 }
