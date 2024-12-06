@@ -108,6 +108,18 @@ fn main() {
                         }
                     }
                 }
+                "cat" => {
+                    // Récuperer l'argument (non du fichier)
+                    if let Some(file_name) = parts.next() {
+                        // Lire et afficher le contenu du fichier 
+                        match fs::read_to_string(file_name) {
+                            Ok(content ) => print!("{}", content),
+                            Err(err) => eprint!("Erreur : impossible de lire le fichier ({})", err),
+                        }
+                    } else {
+                        eprint!("Erreur : aucun fichier spécifié.");
+                    }
+                }
                 _ => {
                     println!("Commande '{}' introuvable", command);
                 }
