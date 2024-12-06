@@ -174,6 +174,24 @@ fn main() {
                         }
                     }
                 }
+                "mv" => {
+                    let source = parts.next();
+                    let destination = parts.next();
+
+                    match (source, destination) {
+                        (Some(src), Some(dest)) => {
+                            if let Err(err) = fs::rename(src, dest) {
+                                eprintln!("Erreur : impossible de déplacer ou renommer ({})", err);
+                            } else {
+                                println!("'{}' déplacé ou renommé en '{}'", src, dest);
+                            }
+                        }
+                        _ => {
+                            eprintln!("Erreur : vous devez spécifier une source et une destination.");
+                        }
+                    }
+                }
+
                 _ => {
                     println!("Commande '{}' introuvable", command);
                 }
