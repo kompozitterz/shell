@@ -2,6 +2,7 @@ use std::env;
 use std::fs;
 use std::io::{self, Write};
 use std::os::unix::fs::MetadataExt; // Pour accéder aux métadonnées Unix
+use std::process;
 
 fn main() {
     loop {
@@ -191,7 +192,32 @@ fn main() {
                         }
                     }
                 }
+                "mkdir" => {
+                    let target = parts.next();
 
+                    if let Some(target) = target {
+                        if let Err(err) = fs::create_dir(target) {
+                            eprintln!("Erreur : impossible de créer le répertoire ({})", err);
+                        } else {
+                            println!("Répertoire '{}' créé.", target);
+                        }
+                    } else {
+                        eprintln!("Erreur : vous devez spécifier un nom de répertoire.");
+                    }
+                }
+                "exit" => {
+                    // Récupérer un code de sortie optionnel
+                    let code = parts.next().unwrap_or("0"); // Par défaut, code 0
+                    match code.parse::<i32>() {
+                        Ok(code) => {
+                            println!("Bye!");
+                            process::exit(code);
+                        }
+                        Err(_) => {
+                            eprintln!("Erreur : le code de sortie doit être un entier.");
+                        }
+                    }
+                }
                 _ => {
                     println!("Commande '{}' introuvable", command);
                 }
