@@ -1,3 +1,4 @@
+use std::env;
 use std::io::{self, Write};
 
 fn main() {
@@ -30,6 +31,13 @@ fn main() {
                     // Récuperer le reste de la ligne après 'echo'
                     let args: Vec<&str> = parts.collect();
                     println!("{}", args.join(" "));
+                }
+                "pwd" => {
+                    // Obtenir le répertoire courant 
+                    match env::current_dir() {
+                        Ok(path) => println!("{}", path.display()),
+                        Err(err) => eprintln!("Erreur : impossible de récuperer le répertoire courant ({})", err),
+                    }
                 }
                 _ => {
                     // Commande non reconnue 
