@@ -120,6 +120,60 @@ fn main() {
                         eprint!("Erreur : aucun fichier spécifié.");
                     }
                 }
+                "cp" => {
+                    let source = parts.next();
+                    let destination = parts.next();
+
+                    match (source, destination) {
+                        (Some(src), Some(dest)) => {
+                            if let Err(err) = fs::copy(src, dest) {
+                                if err.kind() == std::io::ErrorKind::PermissionDenied {
+                                    eprintln!("Erreur : permissions insuffisantes pour copier le fichier.");
+                                } else if err.to_string().contains("Read-only file system") {
+                                    eprintln!("Erreur : système de fichiers en lecture seule.");
+                                } else {
+                                    eprintln!("Erreur : impossible de copier le fichier ({})", err);
+                                }
+                            }                            
+                        }
+                        _ => {
+                            eprintln!("Erreur : vous devez spécifier une source et une destination.");
+                        }
+                    }
+                }
+                "rm" => {
+                    let mut args: Vec<&str> = parts.collect();
+                                
+                    if args.is_empty() {
+                        eprintln!("Erreur : aucun fichier ou répertoire spécifié.");
+                    } else {
+                        let recursive = args.contains(&"-r");
+                        let target = if recursive {
+                            args.retain(|&x| x != "-r");
+                            args.get(0)
+                        } else {
+                            args.get(0)
+                        };
+                    
+                        if let Some(&target) = target {
+                            if recursive {
+                                if let Err(err) = fs::remove_dir_all(target) {
+                                    eprintln!("Erreur : impossible de supprimer le répertoire ({})", err);
+                                } else {
+                                    println!("Répertoire '{}' supprimé.", target);
+                                }
+                            } else {
+                                if let Err(err) = fs::remove_file(target) {
+                                    eprintln!("Erreur : impossible de supprimer le fichier ({})", err);
+                                } else {
+                                    println!("Fichier '{}' supprimé.", target);
+                                }
+                            }
+                        } else {
+                            eprintln!("Erreur : aucun fichier ou répertoire spécifié.");
+                        }
+                    }
+                }
                 _ => {
                     println!("Commande '{}' introuvable", command);
                 }
